@@ -1,1 +1,1 @@
-web: python manage.py migrate && python manage.py collectstatic --noinput && gunicorn expense_tracker.wsgi
+web: gunicorn expense_tracker.wsgi
