@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-3">My Expenses</h2>
+
+<!-- 🔍 FILTER FORM -->
+<form method="GET" class="row g-3 mb-4">
+    <div class="col-md-3">
+        <label class="form-label">Category</label>
+        <input type="text" name="category" value="{{ selected_category }}" class="form-control">
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">From</label>
+        <input type="date" name="start_date" value="{{ start_date }}" class="form-control">
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">To</label>
+        <input type="date" name="end_date" value="{{ end_date }}" class="form-control">
+    </div>
+
+    <div class="col-md-3 d-flex align-items-end gap-2">
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="{% url 'expense_list' %}" class="btn btn-secondary">Clear</a>
+    </div>
+</form>
+
+<!-- ➕ ACTION BUTTONS -->
+<div class="mb-3 d-flex gap-2">
+    <a href="{% url 'add_expense' %}" class="btn btn-primary">
+        ➕ Add Expense
+    </a>
+
+    <a href="{% url 'monthly_summary' %}" class="btn btn-success">
+        📊 Monthly Summary
+    </a>
+</div>
+
+<!-- 💰 TOTAL -->
+<h4 class="mb-3">Total Expense: ₹{{ total_expense }}</h4>
+
+<!-- 📋 EXPENSE LIST -->
+<ul class="list-group">
+{% for e in expenses %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+            <strong>{{ e.date }}</strong> |
+            {{ e.category }} |
+            ₹{{ e.amount }} |
+            {{ e.note }}
+        </div>
+
+        <div class="d-flex gap-2">
+            <a href="{% url 'edit_expense' e.id %}" class="btn btn-sm btn-warning">
+                ✏️ Edit
+            </a>
+
+            <a href="{% url 'delete_expense' e.id %}" class="btn btn-sm btn-danger">
+                🗑 Delete
+            </a>
+        </div>
+    </li>
+{% empty %}
+    <li class="list-group-item text-center text-muted">
+        No expenses found
+    </li>
+{% endfor %}
+</ul>
+
+<!-- 📄 PAGINATION -->
+{% if expenses.paginator.num_pages > 1 %}
+<div class="mt-4 d-flex justify-content-center gap-3">
+    {% if expenses.has_previous %}
+        <a href="?page={{ expenses.previous_page_number }}" class="btn btn-outline-secondary">
+            Previous
+        </a>
+    {% endif %}
+
+    <span class="align-self-center">
+        Page {{ expenses.number }} of {{ expenses.paginator.num_pages }}
+    </span>
+
+    {% if expenses.has_next %}
+        <a href="?page={{ expenses.next_page_number }}" class="btn btn-outline-secondary">
+            Next
+        </a>
+    {% endif %}
+</div>
+{% endif %}
+
+{% endblock %}
